@@ -51,7 +51,7 @@ def create_entry_VLGuard(ids, entry, safe_prompt, safe_comb, idx_response, promp
     new_entry_safe['old_id'] = entry['id']
     image_path = 'VLGuard/' + set_origin + '/' + entry['image'] 
     new_entry_safe['image'] = image_path
-    assert verify_image_exists('Judge/' + image_path)
+    assert verify_image_exists(image_path)
     new_entry_safe['safe_image'] = entry['safe']
 
     if entry['safe'] == True:
@@ -178,7 +178,7 @@ def add_data_RTVLM(id_start = 0, data_type = 'RTVLM_'):
 
             if 'captcha' in json_path:
                 image = 'RedTeamingVLM/data/Captcha/img/' + str(entry['id']) + '.jpg'
-                assert verify_image_exists('Judge/' + image)
+                assert verify_image_exists(image)
                 old_id = 'Captcha_' + str(entry['id'])
                 safe_image = True
                 harmful_category= 'safety'
@@ -195,7 +195,7 @@ def add_data_RTVLM(id_start = 0, data_type = 'RTVLM_'):
 
             elif 'jailbreak' in json_path:
                 image = 'RedTeamingVLM/data/Jailbreak/img/' + str(entry['index']) + '.jpg'
-                assert verify_image_exists('Judge/' + image)
+                assert verify_image_exists(image)
                 old_id = 'Jailbreak_' + str(entry['index'])
                 safe_image = False
                 harmful_category= 'safety'
@@ -211,7 +211,7 @@ def add_data_RTVLM(id_start = 0, data_type = 'RTVLM_'):
                 data_out.append(new_entry_unsafe_image)
 
             elif 'politics' in json_path:
-                image = 'Judge/RedTeamingVLM/data/Safety/Politics/img/' + str(entry['id'])
+                image = 'RedTeamingVLM/data/Safety/Politics/img/' + str(entry['id'])
                 assert verify_image_exists(image)
                 old_id = 'Politics_' + str(entry['id'])
                 safe_image = True
@@ -228,7 +228,7 @@ def add_data_RTVLM(id_start = 0, data_type = 'RTVLM_'):
                 data_out.append(new_entry_unsafe_image)
 
             elif 'racial' in json_path:
-                image = 'Judge/RedTeamingVLM/data/Safety/Racial/img/' + str(entry['id'])
+                image = 'RedTeamingVLM/data/Safety/Racial/img/' + str(entry['id'])
                 assert verify_image_exists(image)
                 old_id = 'Racial_' + str(entry['id'])
                 safe_image = True
@@ -248,7 +248,7 @@ def add_data_RTVLM(id_start = 0, data_type = 'RTVLM_'):
                 prompts = entry['questions']
                 for j, question in enumerate(prompts): 
                     
-                    image = 'Judge/RedTeamingVLM/data/Harmful/img/' + str(entry['index']) + '.jpg'
+                    image = 'RedTeamingVLM/data/Harmful/img/' + str(entry['index']) + '.jpg'
                     assert verify_image_exists(image)
                     old_id = 'Harmful_' + str(entry['index'])
                     safe_image = True
@@ -268,7 +268,7 @@ def add_data_RTVLM(id_start = 0, data_type = 'RTVLM_'):
 
 def add_data_FigStep(id_start = 0, data_type = 'FigStep_'):
     data_out = []
-    img_path = 'Judge/FigStep/data/images/SafeBench-Tiny/'
+    img_path = 'FigStep/data/images/SafeBench-Tiny/'
     csv_path = '/share/users/sara.pieri/Judge/FigStep/data/question/SafeBench-Tiny.csv'
     data = pd.read_csv(csv_path)
     ids = 0 + id_start
