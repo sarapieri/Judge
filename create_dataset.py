@@ -2,27 +2,7 @@ import json
 import os
 import imghdr
 import pandas as pd 
-
-def count_harmful_categories(entries):
-    # Initialize an empty dictionary to store counts of each combination
-    counts = {}
-
-    # Iterate over each entry in the list
-    for entry in entries:
-        # Extract the category and subcategory from the entry
-        category = entry.get('harmful_category', 'Unknown Category')
-        subcategory = entry.get('harmful_subcategory', 'Unknown Subcategory')
-        
-        # Create a unique key for each combination of category and subcategory
-        key = (category, subcategory)
-        
-        # Increment the count for this combination in the dictionary
-        if key not in counts:
-            counts[key] = 1
-        else:
-            counts[key] += 1
-
-    return counts
+from category_analysis import count_harmful_categories
 
 def verify_image_exists(image_path):
     # Check if the file exists
@@ -304,11 +284,7 @@ data_rtvlm = add_data_RTVLM(id_start = 0, data_type = 'RTVLM_') # len(data_train
 data_figstep = add_data_FigStep(id_start = len(data_train_VLGuard) + len(data_test_VLGuard) + len(data_rtvlm), data_type = 'FigStep_') 
 
 combined = data_train_VLGuard + data_test_VLGuard + data_rtvlm + data_figstep
-# combined = data_rtvlm 
 counts = count_harmful_categories(combined) 
 print(counts)
-# sorted_dict = {key: counts[key] for key in sorted(counts)}
-# for k, v in sorted_dict.items():
-#     print(k,v)
     
 save_to_json_file(combined, out_json, 'w')
