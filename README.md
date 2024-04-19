@@ -10,9 +10,66 @@
 - category_analysis.py  (for current dataset distribution)
 - DA.ipynb  (data analysis of original sources)  
 
+### Current dataset structure: 
+
+Each entry in the dataset has: 
+
+- **id**: new id dataset_type(train/test)_int, (string)  
+- **old_id**: old id from the old dataset (string)  
+- **image**: Image_path (string)  
+- **safe_image**: whether the image is safe on his own  (true/false)  
+- **safe_prompt**: whether the text is safe on his own (true/false)  
+- **safe_in_combination**: whether the text+ image is safe  (true/false)  
+- **harmful_category**: category of the combination (string)  
+- **harmful_subcategory**: subcategory of the combination (string)  
+- **prompt**: text that accompanies the image (string)  
+- **safe_reply**: ideal reply from the model (string)  
+- **unsafe_reply**: reply to avoid for the model (string)  
+- **text_in_image**: whether the image contains text (e.g. memes)  (true/false)  
+
+*Note: Missing fields are None*   
+
+| Category             | Subcategory         | VL_Guard_train | VL_Guard_test | FigStep-Tiny | RTVLM | Totals |
+|----------------------|---------------------|----------------|---------------|--------------|-------|--------|
+| Privacy              | Personal data       | 96             | 69            | -            | -     | 165    |
+| Risky Behavior       | Professional advice | 100            | 34            | -            | -     | 134    |
+| Risky Behavior       | Political           | 109            | 57            | -            | 93    | 259    |
+| Risky Behavior       | Sexually explicit   | 199            | 111           | -            | -     | 310    |
+| Risky Behavior       | Violence            | 204            | 68            | -            | -     | 272    |
+| Discrimination       | Other               | 29             | 14            | -            | -     | 43     |
+| Discrimination       | Sex                 | 82             | 31            | -            | -     | 226    |
+| Discrimination       | Race                | 149            | 40            | -            | 37    | 113    |
+| Safety               | Captcha             | 0              | 0             | -            | 200   | 200    |
+| Safety               | Jailbreak           | 0              | 0             | 50           | 22    | 72     |
+| Deception            | Disinformation      | 0              | 0             | -            | 187   | 187    |
+| Deception            | Ads                 | 55             | 18            | -            | -     | 73     |
+| Unsafe               |                     | 1023           | 442           | 50           | 539   | 2054   |
+| None*                | None*               | 1954           | 1116          | -            | -     | 3070   |
+| **Total**            |                     | **2977**       | **1558**      | **50**       | **539** | **5124** |
+
+*Note: None* is noted as 2 times safe examples in the dataset, because for the unsafe-only text, we do not have the category.*
+
+| Feature             | VL_Guard | FigStep-Tiny | RTVLM        |
+|---------------------|----------|--------------|--------------|
+| id                  | ✓        | ✓            | ✓            |
+| old_id              | ✓        | ✓            | ✓            |
+| image               | ✓        | ✓            | ✓            |
+| safe_image          | ✓        | ✓            | ✗ some missing |
+| safe_prompt         | None for unsafe images | ✗ None (no prompts) | ✓ some unclear |
+| safe_in_combination | ✓        | ✓            | ✓ some unclear |
+| harmful_category    | None for safe images but unsafe combination is needed | ✓ All jailbreak | ✓ |
+| harmful_subcategory | None for safe images but unsafe combination is needed | ✓ All jailbreak | ✓ |
+| prompt              | ✓        | ✗            | ✗some missing |
+| safe_reply          | ✓        | ✗            | ✗            |
+| unsafe_reply        | ✗        | ✗            | ✗            |
+| text_in_image       | ✗        | ✓            | ✗ some missing |
+| All images included | ✓ (disinformation ->ads) | ✓ | ✗ |
+
+*Note: The ✓ and ✗ symbols indicate whether a feature or attribute is included or not from each source.*
+
 ### Cost Estimator
 
->Note: Currently supports only GPT-4V, could be extended to other APIs.  
+> Currently supports only GPT-4V, could be extended to other APIs.  
 
 **Functionality:**   
 Processes a dataset of images and text prompts, calculating the cost based on token usage
@@ -59,7 +116,7 @@ Total Cost for Low Detail: $23.74 (Average per Image: $0.0046)
 ```
 ### GPT-4V_eval
 
-> Note: Currently supports only GPT-4V, could be extended to other APIs or open-source models. 
+> Currently supports only GPT-4V, could be extended to other APIs or open-source models. 
 
 **Functionality:**   
 This Python script is designed to process a dataset consisting of images and texts by interacting with the OpenAI API, specifically leveraging the capabilities of the GPT-4 Vision model. The script accepts various parameters to customize the operation according to user needs.
