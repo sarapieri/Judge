@@ -1,3 +1,15 @@
+# Judge Project Repository 
+
+## Current Judge Files 
+
+- GPT-4V_eval.py  (Judge)  
+- cost_estimate.py  (of GPT4-V Judge submission)
+- prompt_gpt-4_V1.txt  (GPT-4V current prompt)
+- create_dataset.py  (code to generate the dataset)  
+- dataset.json  (dataset current version)  
+- category_analysis.py  (for current dataset distribution)
+- DA.ipynb  (data analysis of original sources)  
+
 ### Cost Estimator
 
 >Note: Currently supports only GPT-4V, could be extended to other APIs.  
