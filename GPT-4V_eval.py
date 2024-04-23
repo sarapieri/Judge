@@ -105,7 +105,7 @@ def GPT_4V_parse_response(json_str, debug = False):
     
     return safe_combination, problem
 
-def GPT_4V_get_response(entry, openai_api_key, prompt, image_quality, max_tokens=300, max_attempts = 3, debug=False): 
+def GPT_4V_get_response(entry, model_choice, openai_api_key, prompt, image_quality, max_tokens=300, max_attempts = 3, debug=False): 
     """
     Queries the OpenAI API with a specific entry to predict safety and problem categories using GPT model.
     
@@ -113,8 +113,8 @@ def GPT_4V_get_response(entry, openai_api_key, prompt, image_quality, max_tokens
         entry (dict): Dictionary containing the entry data.
         openai_api_key (str): The API key for authenticating with the OpenAI service.
         prompt (str): The prompt to send to the GPT model.
-        max_tokens (int): The maximum number of tokens that can be used by the model.
         max_attempts (int): The maximum number of attempts to make in case of errors.
+        max_tokens (int): The maximum number of tokens that can be used by the model.
         debug (bool): If True, prints detailed debug information about the process.
     
     Returns:
@@ -136,19 +136,35 @@ def GPT_4V_get_response(entry, openai_api_key, prompt, image_quality, max_tokens
             base64_image = encode_image(entry["image"])
 
             payload = {
-            "model": "gpt-4-vision-preview",
-            "messages": [
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "text", "text": prompt},
-                        {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}",  "detail": image_quality}}, 
-                        {"type": "text", "text": "Text:\n" + entry["prompt"]}  
-                    ]
-                }
-            ],
-            "max_tokens": max_tokens
+                "model": model_choice,
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": prompt
+                            },
+                            {
+                                "type": "image_url",
+                                "image_url": {
+                                    "url": f"data:image/jpeg;base64,{base64_image}", 
+                                    "detail": image_quality
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "max_tokens": max_tokens
             }
+
+            # Add the text entry conditionally
+            if entry["prompt"]:  
+                payload["messages"][0]["content"].append({
+                    "type": "text",
+                    "text": "Text:\n" + entry["prompt"]
+                })
+
             response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
             response.raise_for_status()  # Raises HTTPError for bad requests (4XX or 5XX)
             json_resp = response.json()
@@ -204,7 +220,7 @@ def main(args):
     processed_data = []             # List to store processed log data
     
     # Check that API key is provided if the selected model is 'gpt-4-vision-preview'
-    if args.model_choice == 'gpt-4-vision-preview':
+    if 'gpt-4' in args.model_choice:
         assert args.openai_api_key, "Error: API key is required for the selected model."
 
         # Also check that the image quality is specified correctly when using 'gpt-4-vision-preview'
@@ -229,8 +245,8 @@ def main(args):
     # Process each entry in the JSON file
     for index, entry in enumerate(tqdm(data)):  
 
-        safe_combination, problem = GPT_4V_get_response(entry, args.openai_api_key, prompt, args.image_quality, args.debug) 
-        
+        safe_combination, problem = GPT_4V_get_response(entry=entry, model_choice=args.model_choice,  openai_api_key= args.openai_api_key, prompt=prompt, image_quality=args.image_quality, debug=args.debug) 
+        # print(safe_combination, problem)
         # Append for record
         processed_data.append(generate_entry(entry, problem, safe_combination))
 
@@ -317,7 +333,7 @@ if __name__ == "__main__":
     parser.add_argument("--image_quality",  type=str, default='low', choices = ['low', 'high'], help="Image quality to process OpenAI requests. Choiches = ['low', 'high']")
     parser.add_argument("--openai_api_key", type=str, required=True, help="API key for OpenAI.")
     parser.add_argument("--data_file",   type=str, default='./dataset.json', help="Path to the JSON file with data.")
-    parser.add_argument("--prompt_file", type=str, default='./prompt_gpt-4_V1.txt', help="File containing the prompt text.")
+    parser.add_argument("--prompt_file", type=str, default='./prompt_gpt-4_V2.txt', help="File containing the prompt text.")
     parser.add_argument("--output_file", type=str, default='gpt-4-vision-predictions.json', help="Path to the output JSON file to save predictions.")
     parser.add_argument("--save_every",  type=int, default=1, help="Iterations before saving output data to json.")
     parser.add_argument("--start_index", type=int, default=0, help="Start index for slicing the data.")

@@ -208,11 +208,11 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process some images and texts.")
     parser.add_argument('--model_name', type=str, default="gpt-4", help='Name of the model')
-    parser.add_argument('--prompt_file', type=str, default='./prompt_gpt-4_V1.txt', help='File path for the prompt text')
+    parser.add_argument('--prompt_file', type=str, default='./prompt_gpt-4_V2.txt', help='File path for the prompt text')
     parser.add_argument('--data_file', type=str, default='./dataset.json', help='File path for the dataset')
     parser.add_argument('--cost_per_token_input', type=float, default=0.00001, help='Cost per input token. Source: https://openai.com/pricing')
     parser.add_argument('--cost_per_token_output', type=float, default=0.00003, help='Cost per output token. Source: https://openai.com/pricing')
-    parser.add_argument('--possible_output_text', type=str, default='', help='Possible output text for token calculation')
+    parser.add_argument('--possible_output_text', type=str, default="{\n  \"safe_combination\": false,\n  \"problem\": [\"deception\", \"ads\"]\n}", help='Possible output text for token calculation')
     args = parser.parse_args()
     main(args)
         

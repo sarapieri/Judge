@@ -4,7 +4,8 @@
 
 - GPT-4V_eval.py  (Judge)  
 - cost_estimate.py  (of GPT4-V Judge submission)
-- prompt_gpt-4_V1.txt  (GPT-4V current prompt)
+- prompt_gpt-4_V1.txt  (GPT-4V old prompt - text is mandatory for each entry)
+- prompt_gpt-4_V2.txt  (GPT-4V current prompt - optional text per entry)
 - create_dataset.py  (code to generate the dataset)  
 - dataset.json  (dataset current version)  
 - category_analysis.py  (for current dataset distribution)
@@ -94,24 +95,25 @@ python cost_estimate.py
 Which will result in running it with the custom parameters (which can be modified): 
 
 ```
-python cost_estimate.py --model_name gpt-4 --prompt_file ./prompt_gpt-4_V1.txt --data_file ./dataset.json --cost_per_token_input 0.00001 --cost_per_token_output 0.00003 --possible_output_text ''
+python cost_estimate.py --model_name gpt-4 --prompt_file ./prompt_gpt-4_V2.txt --data_file ./dataset.json --cost_per_token_input 0.00001 --cost_per_token_output 0.00003 --possible_output_text "{\n  "safe_combination": false,\n  "problem": ["deception", "ads"]\n}"
 ```
 
 Possible output: 
 ```
+Processing Cost Estimate of ./dataset.json with gpt-4 (prompt: ./prompt_gpt-4_V2.txt)...
 --------------------------------
 Cost Estimate Results:
 Total Images: 5124
-Prompt tokens: 363
+Prompt tokens: 369
 Total Tokens (High Detail Images): 5835080
 Total Tokens (Low Detail Images): 435540
 Average Tokens (High Detail per Image): 1138.77
 Average Tokens (Low Detail per Image): 85.00
-Input Token Count (Low Detail) One sample: 448
-Input Token Count (High Detail) One Sample: 1128
-Total Output Tokens: 0, Per sample: 0.0
-Total Cost for High Detail: $77.74 (Average per Image: $0.0152)
-Total Cost for Low Detail: $23.74 (Average per Image: $0.0046)
+Input Token Count (Low Detail) One sample: 454
+Input Token Count (High Detail) One Sample: 1134
+Total Output Tokens: 102480, Per sample: 20.0
+Total Cost for High Detail: $81.12 (Average per Image: $0.0158)
+Total Cost for Low Detail: $27.12 (Average per Image: $0.0053)
 --------------------------------
 ```
 ### GPT-4V_eval
@@ -145,16 +147,28 @@ Which will result in running it with the custom parameters (which can be modifie
 python GPT-4V_eval.py \
     --model_choice gpt-4-vision-preview --image_quality low --openai_api_key "your key"  \
     --data_file ./dataset.json \
-    --prompt_file ./prompt_gpt-4_V1.txt \
+    --prompt_file ./prompt_gpt-4_V2.txt \
     --output_file gpt-4-vision-predictions.json \
     --save_every 1 \
     --start_index 0 \
     --end_index 2 \
     --debug False \
 ```
+
 Possible Output: 
 ```
-TODO
+Summary Statistics:
+--------------------------------
+Total Entries Processed: 2
+Failed Predictions: 0/2
+Correct Harm/Non-Harm Predictions: 2/2, (100.00%)
+No safe entries to report.
+Unsafe Entries Correctly Predicted: 2/2, (100.00%)
+Correctly Predicted Harm Categories: 1/2, (50.00%)
+Correctly Predicted Harm Subcategories: 1/2, (50.00%)
+False Negative Categories Missed: 0/2, (relative to unsafe entries) (0.00%)
+No non-harmful entries to report.
+--------------------------------
 ```
 
 JSON Output: 
